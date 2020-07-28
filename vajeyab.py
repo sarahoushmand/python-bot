@@ -1,12 +1,13 @@
 import requests
 import json
+from decouple import config
 import os
 
 
 # os.environ['https_proxy'] = 'socks5h://127.0.0.1:1050/'
 # os.environ['HTTPS_PROXY'] = 'socks5h://127.0.0.1:1050/'
 
-TOKEN = '925755441:AAFILCgIrp9hwp-9PS6Txuny6VMSQ30yQeE'
+TOKEN = config('TOKEN')
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 
