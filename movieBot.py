@@ -2,16 +2,17 @@ from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHa
 import mysql.connector
 import os
 import logging
+from decouple import config
 
-os.environ['https_proxy'] = 'socks5h://127.0.0.1:1050/'
-os.environ['HTTPS_PROXY'] = 'socks5h://127.0.0.1:1050/'
+os.environ['https_proxy'] = config('PROXY')
+os.environ['HTTPS_PROXY'] = config('PROXY')
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 MOVIE = range(1)
 DELETE = range(1)
-TOKEN = "1013928629:AAFsBMNqz4crCjMuCyrxS073V8a9wSukKc8"
+TOKEN = config('TELEGRAM_TOKEN')
 
 
 def start(bot, update):
@@ -70,8 +71,10 @@ def show(bot, update):
     movie = ''
     for i in range(len(all)):
         movie += str(i+1) + ' : ' + all[i][0] + '\n'
-
-    update.message.reply_text(movie)
+    if movie == '':
+        update.message.reply_text('فیلمی موجود نیست')
+    else:
+        update.message.reply_text(movie)
 
 
 def delete(bot, update):
@@ -90,12 +93,17 @@ def delete(bot, update):
     cursor.execute(sql, cid)
 
     all = cursor.fetchall()
+    print(all,chatid)
     movie = ''
     for i in range(len(all)):
         movie += '/' + str(all[i][1]) + ' : ' + all[i][0] + '\n'
 
-    update.message.reply_text(movie)
-    update.message.reply_text('حالا اسم فیلمیو که میخواهی حذف کنی انتخاب کن')
+    if movie != '':
+        update.message.reply_text(movie)
+        update.message.reply_text('حالا اسم فیلمیو که میخواهی حذف کنی انتخاب کن')
+    else:
+        update.message.reply_text('فیلمی موجود نیست')
+
     return DELETE
 
 
