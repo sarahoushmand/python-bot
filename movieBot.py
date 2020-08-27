@@ -93,7 +93,6 @@ def delete(bot, update):
     cursor.execute(sql, cid)
 
     all = cursor.fetchall()
-    print(all,chatid)
     movie = ''
     for i in range(len(all)):
         movie += '/' + str(all[i][1]) + ' : ' + all[i][0] + '\n'
