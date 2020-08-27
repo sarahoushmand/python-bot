@@ -75,38 +75,43 @@ def show(bot, update):
 
 
 def delete(bot, update):
-    message = update.message.text
     user = update.message.from_user
-    chat_id = user.id
-    update.message.reply_text('حالا اسم فیلمیو که میخواهی حذف کنی وارد کن')
-    return DELETE
+    chatid = user.id
 
-
-def delete_movie(bot, update, user_data):
-    message = update.message.text
-    user = update.message.from_user
-    chat_id = user.id
     db = mysql.connector.connect(
         user='root', password='sara717880',
         host='localhost',
         database='movie'
     )
     cursor = db.cursor()
-    sql = "SELECT movie FROM movies where chat_id = %s and movie = %s"
-    cid = (chat_id, message)
+    sql = "SELECT movie, id FROM movies where chat_id = %s"
+    cid = (chatid,)
 
     cursor.execute(sql, cid)
 
-    all = cursor.fetchone()
-    if all is not None and all[0] == message:
-        sql = "DELETE FROM movies WHERE chat_id = %s and movie = %s"
-        cid = (chat_id, message)
-        cursor.execute(sql, cid)
-        db.commit()
+    all = cursor.fetchall()
+    movie = ''
+    for i in range(len(all)):
+        movie += '/' + str(all[i][1]) + ' : ' + all[i][0] + '\n'
 
-        update.message.reply_text("فیلم " + message + " حذف شد")
-    else:
-        update.message.reply_text("فیلم " + message + " یافت نشد☹️")
+    update.message.reply_text(movie)
+    update.message.reply_text('حالا اسم فیلمیو که میخواهی حذف کنی انتخاب کن')
+    return DELETE
+
+
+def delete_movie(bot, update, user_data):
+    movie_id = update.message.text.replace("/", "")
+    db = mysql.connector.connect(
+        user='root', password='sara717880',
+        host='localhost',
+        database='movie'
+    )
+    cursor = db.cursor()
+    sql = "DELETE FROM movies WHERE id = %s"
+    cursor.execute(sql, (int(movie_id),))
+    db.commit()
+    update.message.reply_text("فیلم مورد نظر حذف شد")
+
     return ConversationHandler.END
 
 
@@ -116,7 +121,7 @@ def cancel(bot, update):
 
 
 def main():
-    updater = Updater('1013928629:AAFsBMNqz4crCjMuCyrxS073V8a9wSukKc8')
+    updater = Updater(TOKEN)
     dp = updater.dispatcher
     dp.add_handler(CommandHandler("start", start))
     add_movie_conversation = ConversationHandler(
@@ -137,7 +142,7 @@ def main():
         ],
         states={
             DELETE: [
-                MessageHandler(Filters.text & (~ Filters.command), delete_movie, pass_user_data=True)
+                MessageHandler(Filters.command & Filters.regex('^\/\d+'), delete_movie, pass_user_data=True)
             ]
         },
         fallbacks=[]
