@@ -38,7 +38,7 @@ def add_movie(bot, update, user_data):
     user = update.message.from_user
     chat_id = user.id
     db = mysql.connector.connect(
-                                  user='root', password='sara717880',
+                                  user=config('DB_USERNAME'), password=config('DB_PASSWORD'),
                                   host='localhost',
                                   database='movie'
                                  )
@@ -57,7 +57,7 @@ def show(bot, update):
     chatid = user.id
 
     db = mysql.connector.connect(
-        user='root', password='sara717880',
+        user=config('DB_USERNAME'), password=config('DB_PASSWORD'),
         host='localhost',
         database='movie'
     )
@@ -82,7 +82,7 @@ def delete(bot, update):
     chatid = user.id
 
     db = mysql.connector.connect(
-        user='root', password='sara717880',
+        user=config('DB_USERNAME'), password=config('DB_PASSWORD'),
         host='localhost',
         database='movie'
     )
@@ -110,7 +110,7 @@ def delete(bot, update):
 def delete_movie(bot, update, user_data):
     movie_id = update.message.text.replace("/", "")
     db = mysql.connector.connect(
-        user='root', password='sara717880',
+        user=config('DB_USERNAME'), password=config('DB_PASSWORD'),
         host='localhost',
         database='movie'
     )
