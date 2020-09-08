@@ -81,7 +81,7 @@ def add_movie_imdb(bot, update, user_data):
     result = soup.find("span", attrs={"itemprop": "ratingValue"})
     rate = result.text
 
-    items = soup.find_all("div", attrs={"class": "plot_summary "})
+    items = soup.find_all("div", attrs={"class": "plot_summary"})
     for item in items:
         summary = (item.find("div", attrs={"class": "summary_text"}).text.strip())
 
